@@ -13,6 +13,7 @@ namespace Wipro.Xamarin.Test.View
     public partial class ListPage : ContentPage
     {
         private ListPageViewModel vm;
+        private int _currentOrientation;
 
         public ListPage()
         {
@@ -25,8 +26,29 @@ namespace Wipro.Xamarin.Test.View
             base.OnAppearing();
             vm.LoadDataCommand.Execute(null);
         }
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (_currentOrientation == 0)
+            {;
+                _currentOrientation =(int) (width > height ? Orientation.Landscape : Orientation.Portrait);
+            }
+            else
+            {
+                int newOrientation = (int)(width > height ? Orientation.Landscape : Orientation.Portrait);
+                if (newOrientation != _currentOrientation)
+                {
+                    
+                    _currentOrientation = newOrientation;
+                    InitializeComponent();                  
+                    vm.OnScreenSizeChanged();
+                }
+            }
+            
+        }
+        private enum Orientation { Landscape=1, Portrait};
 
 
-        
+
     }
 }

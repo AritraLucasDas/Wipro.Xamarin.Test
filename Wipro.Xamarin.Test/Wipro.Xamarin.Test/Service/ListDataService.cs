@@ -11,7 +11,7 @@ namespace Wipro.Xamarin.Test.Service
 {
     public class ListDataService
     {
-        public async Task<DataModel> GetListData()
+        public DataModel GetListData()
         {
             DataModel result = null;
             HttpResponseMessage response =

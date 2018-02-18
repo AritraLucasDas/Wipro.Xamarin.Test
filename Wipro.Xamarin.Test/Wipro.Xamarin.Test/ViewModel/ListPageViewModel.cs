@@ -25,22 +25,35 @@ namespace Wipro.Xamarin.Test.ViewModel
         public ObservableCollection<Row> ItemsRedundant { get; } = new ObservableCollection<Row>();
         private readonly ListDataService _listDataService;
         private bool _isBusy;
-        private string _title = "Loading";
+        private string _title ;
         private bool _isSorted;
-        private string _sortButtonText = "Sort";
+        private string _sortButtonText;
 
 
         public ListPageViewModel()
         {
             _listDataService = new ListDataService();
+            SetDefautValues();
+
+        }
+
+        public void OnScreenSizeChanged()
+        {
+            SetDefautValues();
+            LoadDataCommand.Execute(null);
+        }
+        private void SetDefautValues()
+        {
+            _title = "Loading";
+            _sortButtonText = "Sort";
 
         }
 
         ICommand _loadDataCommand;
         public ICommand LoadDataCommand =>
-            _loadDataCommand ?? (_loadDataCommand = new Command(async () =>
+            _loadDataCommand ?? (_loadDataCommand = new Command(async ()=>
             {
-                IsBusy = true;
+               
                 await GetListDataAsync();
             }, () => !IsBusy));
 
@@ -48,8 +61,8 @@ namespace Wipro.Xamarin.Test.ViewModel
         public ICommand SortListCommand =>
             _sortListCommand ?? (_sortListCommand = new Command(async () =>
             {
-                IsBusy = true;
-                await Sort_OnClicked();
+               
+               await Sort_OnClicked();
             }, () => !IsBusy));
 
 
@@ -65,9 +78,6 @@ namespace Wipro.Xamarin.Test.ViewModel
             get => _isBusy;
             set
             {
-                if (_isBusy == value)
-                    return;
-
                 _isBusy = value;
                 OnPropertyChanged();
             }
@@ -95,32 +105,39 @@ namespace Wipro.Xamarin.Test.ViewModel
 
         private async Task GetListDataAsync()
         {
-            if (IsBusy)
-                return;
+            
             try
             {
-                DataModel receievedData = await _listDataService.GetListData();
-                Title = receievedData.Title;
-                if (Items.Count > 0)
+                IsBusy = true;
+                await Task.Run(() =>
                 {
-                    Items.Clear();
-                }
-                if (ItemsRedundant.Count > 0)
-                {
-                    ItemsRedundant.Clear();
-                }
-                receievedData.Rows.ForEach(Items.Add);
-                receievedData.Rows.ForEach(ItemsRedundant.Add);
+                    DataModel receievedData = _listDataService.GetListData();
+
+                    Title = receievedData.Title;
+                    if (Items.Count > 0)
+                    {
+                        Items.Clear();
+                    }
+                    if (ItemsRedundant.Count > 0)
+                    {
+                        ItemsRedundant.Clear();
+                    }
+                    receievedData.Rows.ForEach(Items.Add);
+                    receievedData.Rows.ForEach(ItemsRedundant.Add);
+
+                });
+                
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.StackTrace);
-                await Application.Current.MainPage.DisplayAlert("Fetch Error", "Unable to get data",
-                    "OK");
+                ShowError(ex);
+                
+                
             }
             finally
             {
                 IsBusy = false;
+
             }
         }
         public async Task Sort_OnClicked()
@@ -128,31 +145,34 @@ namespace Wipro.Xamarin.Test.ViewModel
             
             try
             {
-                if (!_isSorted)
-                {
+                IsBusy = true;
+                await Task.Run(() => {
+                    if (!_isSorted)
+                    {
 
-                    var sortedItems = from item in Items orderby item.Title select item;
-                    var t = sortedItems.ToList();
-                    Items.Clear();
-                    t.ForEach(Items.Add);
-                    _isSorted = true;
-                    _sortButtonText = "Unsort";
+                        var sortedItems = from item in Items orderby item.Title select item;
+                        var t = sortedItems.ToList();
+                        Items.Clear();
+                        t.ForEach(Items.Add);
+                        _isSorted = true;
+                        SortButtontext = "Unsort";
 
-                }
-                else
-                {
-                    Items.Clear();
-                    ItemsRedundant.ForEach(Items.Add);
-                    _isSorted = false;
-                    _sortButtonText = "Sort";
+                    }
+                    else
+                    {
+                        Items.Clear();
+                        ItemsRedundant.ForEach(Items.Add);
+                        _isSorted = false;
+                        SortButtontext = "Sort";
 
-                }
+                    }
+                });
+                
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.StackTrace);
-                await Application.Current.MainPage.DisplayAlert("Fetch Error", "Unable to sort data",
-                    "OK");
+                
+                ShowError(ex);
             }
             finally
             {
@@ -161,6 +181,14 @@ namespace Wipro.Xamarin.Test.ViewModel
 
 
 
+        }
+
+        private async void ShowError(Exception ex)
+        {
+            Debug.WriteLine(ex.StackTrace);
+            Title = "Error";
+            await Application.Current.MainPage.DisplayAlert("Fetch Error", "Unable to get data",
+                "OK");
         }
     }
 }
