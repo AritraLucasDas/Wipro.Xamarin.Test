@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Wipro.Xamarin.Test.View.ListPage">
+    <AbsoluteLayout
+        HorizontalOptions="FillAndExpand"
+        VerticalOptions="FillAndExpand">
+        <Grid
+            AbsoluteLayout.LayoutFlags="All" 
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            RowSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                FontSize="20"
+                BackgroundColor="#F5F5F5"
+                HorizontalTextAlignment="Center"
+                HorizontalOptions="FillAndExpand"
+                Text="{Binding Title}"/>
+            <ListView x:Name="List"
+                      Grid.Row="1"
+                      HasUnevenRows="True"
+                      IsPullToRefreshEnabled="True"
+                      IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                      RefreshCommand="{Binding LoadDataCommand}"
+                      ItemsSource="{Binding Items}"
+                      CachingStrategy="RecycleElement">
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                                <Label Text="{Binding Title}" 
+                                       Style="{DynamicResource ListItemTextStyle}" />
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="{Binding Description}" 
+                                           Style="{DynamicResource ListItemDetailTextStyle}"/>
+                                    <Image Source="{Binding ImageHref}"></Image>
+                                </StackLayout>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Grid.Row="2"
+                    Text="{Binding SortButtontext}"
+                    Command="{Binding SortListCommand}"
+                    HorizontalOptions="FillAndExpand"></Button>
+        </Grid>
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="CenterAndExpand"
+                           HorizontalOptions="CenterAndExpand"/>
+    </AbsoluteLayout>
+</ContentPage>
