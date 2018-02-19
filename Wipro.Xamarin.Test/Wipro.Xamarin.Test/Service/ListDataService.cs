@@ -9,8 +9,15 @@ using Wipro.Xamarin.Test.Model;
 
 namespace Wipro.Xamarin.Test.Service
 {
+    /// <summary>
+    /// This class is to handle all the services related to the ListPage
+    /// </summary>
     public class ListDataService
     {
+        /// <summary>
+        /// This method is to get actual data to feed the list on UI, from external source
+        /// </summary>
+        /// <returns> A DataModel object recieved from the JSON</returns>
         public DataModel GetListData()
         {
             DataModel result = null;

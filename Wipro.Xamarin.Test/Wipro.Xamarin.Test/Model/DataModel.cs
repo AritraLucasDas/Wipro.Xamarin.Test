@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Wipro.Xamarin.Test.Model
 {
+    /// <summary>
+    /// This class is a model class to handle data needed for this project, this
+    /// contains a list of row objects and the title of the data
+    /// </summary>
     public partial class DataModel
     {
         [JsonProperty("title")]
@@ -14,6 +18,9 @@ namespace Wipro.Xamarin.Test.Model
         public List<Row> Rows { get; set; }
     }
 
+    /// <summary>
+    /// This is a model class for the rows data in the DataModel class
+    /// </summary>
     public class Row
     {
         [JsonProperty("title")]
@@ -26,19 +33,6 @@ namespace Wipro.Xamarin.Test.Model
         public string ImageHref { get; set; }
     }
 
-    public partial class DataModel
-    {
-        public static DataModel FromJson(string json) => JsonConvert.DeserializeObject<DataModel>(json, Converter.Settings);
-    }
-
-    public class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-        };
-    }
 }
 
 

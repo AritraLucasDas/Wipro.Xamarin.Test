@@ -29,12 +29,14 @@ namespace Wipro.Xamarin.Test.View
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
+            // Set the orientation as currentation on the first run
             if (_currentOrientation == 0)
             {;
                 _currentOrientation =(int) (width > height ? Orientation.Landscape : Orientation.Portrait);
             }
             else
             {
+                // On 2nd run onwards check whther the screen has been rotated and handle that
                 int newOrientation = (int)(width > height ? Orientation.Landscape : Orientation.Portrait);
                 if (newOrientation != _currentOrientation)
                 {
